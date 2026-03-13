@@ -50,8 +50,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "[4/4] Installing remaining utilities..."
-$PY -m pip install datasets soundfile PyYAML huggingface_hub numpy hf_transfer matplotlib
+echo "[4/4] Installing remaining utilities and missing dependencies..."
+$PY -m pip install datasets soundfile PyYAML huggingface_hub numpy hf_transfer matplotlib nv-one-logger lightning pytorch-lightning omegaconf hydra-core einops sentencepiece tensorboard torchmetrics pydantic lhotse editdistance librosa inflect unidecode tqdm scipy pydub
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install base dependencies"
     exit 1
