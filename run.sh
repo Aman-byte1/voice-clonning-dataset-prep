@@ -23,7 +23,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "[2/4] Installing base dependencies..."
-pip install datasets soundfile pyyaml huggingface_hub numpy
+pip install datasets soundfile PyYAML huggingface_hub numpy
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install base dependencies"
     exit 1
