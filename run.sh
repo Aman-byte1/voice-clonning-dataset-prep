@@ -29,9 +29,10 @@ echo " Voice Cloning Dataset Pipeline"
 echo "============================================================"
 echo ""
 
-echo "[1/4] Installing nemo-toolkit with all its dependencies..."
-# Force reinstall so deps aren't skipped if nemo was previously installed with --no-deps
-$PY -m pip install --force-reinstall "nemo-toolkit[all]"
+echo "[1/4] Installing torch and nemo-toolkit core dependencies..."
+# Force reinstall so deps aren't skipped
+$PY -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+$PY -m pip install --force-reinstall "nemo-toolkit[tts]"
 if [ $? -ne 0 ]; then
     echo "[WARN] nemo-toolkit install reported errors (likely transformers conflict) - continuing..."
 fi
@@ -51,7 +52,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "[4/4] Installing remaining utilities and missing dependencies..."
-$PY -m pip install datasets soundfile PyYAML huggingface_hub numpy hf_transfer matplotlib nv-one-logger lightning pytorch-lightning omegaconf hydra-core einops sentencepiece tensorboard torchmetrics pydantic lhotse editdistance librosa inflect unidecode tqdm scipy pydub
+$PY -m pip install datasets soundfile PyYAML huggingface_hub numpy hf_transfer matplotlib lightning pytorch-lightning omegaconf hydra-core einops sentencepiece tensorboard torchmetrics pydantic lhotse editdistance librosa inflect unidecode tqdm scipy pydub
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install base dependencies"
     exit 1
