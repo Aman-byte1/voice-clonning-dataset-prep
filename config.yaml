@@ -1,0 +1,40 @@
+# =============================================================================
+# Voice Cloning Dataset Pipeline - Configuration
+# =============================================================================
+
+# --- HuggingFace Settings ---
+huggingface:
+  token_env: HF_TOKEN                              # Environment variable name for HF token
+  username: amanuelbyte
+  source_dataset: amanuelbyte/en-fr-translated-dataset
+  output_dataset: amanuelbyte/vc-en-fr-dataset      # Where to push the generated dataset
+
+# --- TTS Model Settings ---
+model:
+  name: nineninesix/kani-tts-370m
+  sample_rate: 22050
+
+# --- Speaker Configuration ---
+# Each speaker can produce audio in all listed languages
+speakers:
+  - karim
+  - david
+  - seulgi
+
+# --- Language Configuration ---
+# Maps language code → column name in the source dataset
+languages:
+  en: en    # English column
+  fr: fr    # French column
+
+# --- Sampling ---
+# Set sample_size to null or remove it to process the full dataset
+sample:
+  size: 10          # Number of rows to sample (use small number for testing)
+  seed: 42          # Random seed for reproducibility
+
+# --- Output Settings ---
+output:
+  directory: ./output
+  audio_format: wav
+  manifest_file: manifest.json

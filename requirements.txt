@@ -1,0 +1,7 @@
+kani-tts
+transformers==4.57.1
+datasets
+soundfile
+pyyaml
+huggingface_hub
+numpy
