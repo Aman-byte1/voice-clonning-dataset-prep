@@ -30,8 +30,8 @@ echo "============================================================"
 echo ""
 
 echo "[1/4] Installing nemo-toolkit with all its dependencies..."
-# Install nemo-toolkit properly so all its deps (torch, hydra, librosa etc.) are installed
-$PY -m pip install "nemo-toolkit[all]"
+# Force reinstall so deps aren't skipped if nemo was previously installed with --no-deps
+$PY -m pip install --force-reinstall "nemo-toolkit[all]"
 if [ $? -ne 0 ]; then
     echo "[WARN] nemo-toolkit install reported errors (likely transformers conflict) - continuing..."
 fi
