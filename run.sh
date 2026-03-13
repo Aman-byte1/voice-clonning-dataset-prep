@@ -14,20 +14,30 @@ echo " Voice Cloning Dataset Pipeline"
 echo "============================================================"
 echo ""
 
-# Step 1: Install dependencies
-echo "[1/3] Installing base dependencies..."
-pip install -r requirements.txt
+# Step 1: Install kani-tts without its strict dependencies first
+echo "[1/4] Installing kani-tts and allowing resolution overrides..."
+pip install kani-tts --no-deps
+if [ $? -ne 0 ]; then
+    echo "[ERROR] Failed to install kani-tts"
+    exit 1
+fi
+
+echo "[2/4] Installing base dependencies..."
+pip install datasets soundfile pyyaml huggingface_hub numpy
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install base dependencies"
     exit 1
 fi
 
-echo "[1.5/3] Forcing upgrade of transformers for LFM2..."
-pip install -U "transformers==4.57.1" --no-dependencies
+echo "[3/4] Forcing upgrade of transformers for LFM2..."
+pip install -U "transformers==4.57.1"
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to upgrade transformers"
     exit 1
 fi
+
+echo "[4/4] Installing remaining nemo-toolkit dependencies (ignoring transformers conflict)..."
+pip install "nemo-toolkit[all]" --no-deps
 
 echo ""
 echo "[2/3] Generating audio dataset..."
