@@ -38,7 +38,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "[2/4] Installing base dependencies..."
-$PY -m pip install datasets soundfile PyYAML huggingface_hub numpy hf_transfer torch
+$PY -m pip install datasets soundfile PyYAML huggingface_hub numpy hf_transfer torch librosa scipy omegaconf onnx protobuf ruamel.yaml scikit-learn tensorboard text-unidecode wget wrapt
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install base dependencies"
     exit 1
