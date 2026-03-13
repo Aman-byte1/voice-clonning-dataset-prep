@@ -29,30 +29,33 @@ echo " Voice Cloning Dataset Pipeline"
 echo "============================================================"
 echo ""
 
-# Step 1: Install kani-tts without its strict dependencies first
-echo "[1/4] Installing kani-tts (no-deps to avoid conflicts)..."
+echo "[1/4] Installing nemo-toolkit with all its dependencies..."
+# Install nemo-toolkit properly so all its deps (torch, hydra, librosa etc.) are installed
+$PY -m pip install "nemo-toolkit[all]"
+if [ $? -ne 0 ]; then
+    echo "[WARN] nemo-toolkit install reported errors (likely transformers conflict) - continuing..."
+fi
+
+echo "[2/4] Installing kani-tts (no-deps to avoid pinning nemo version)..."
 $PY -m pip install kani-tts --no-deps
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install kani-tts"
     exit 1
 fi
 
-echo "[2/4] Installing base dependencies..."
-$PY -m pip install datasets soundfile PyYAML huggingface_hub numpy hf_transfer torch librosa scipy omegaconf onnx protobuf ruamel.yaml scikit-learn tensorboard text-unidecode wget wrapt
-if [ $? -ne 0 ]; then
-    echo "[ERROR] Failed to install base dependencies"
-    exit 1
-fi
-
-echo "[3/4] Installing transformers==4.57.1 for LFM2..."
+echo "[3/4] Forcing transformers==4.57.1 (required by LFM2)..."
 $PY -m pip install -U "transformers==4.57.1"
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install transformers"
     exit 1
 fi
 
-echo "[4/4] Installing nemo-toolkit (no-deps to avoid conflicts)..."
-$PY -m pip install "nemo-toolkit[all]" --no-deps
+echo "[4/4] Installing remaining utilities..."
+$PY -m pip install datasets soundfile PyYAML huggingface_hub numpy hf_transfer matplotlib
+if [ $? -ne 0 ]; then
+    echo "[ERROR] Failed to install base dependencies"
+    exit 1
+fi
 
 echo ""
 echo "[5/5] Generating audio dataset..."
