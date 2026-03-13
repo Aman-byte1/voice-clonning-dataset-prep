@@ -16,28 +16,28 @@ echo ""
 
 # Step 1: Install kani-tts without its strict dependencies first
 echo "[1/4] Installing kani-tts and allowing resolution overrides..."
-pip install kani-tts --no-deps
+python -m pip install kani-tts --no-deps
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install kani-tts"
     exit 1
 fi
 
 echo "[2/4] Installing base dependencies..."
-pip install --upgrade --force-reinstall datasets soundfile PyYAML huggingface_hub numpy
+python -m pip install --upgrade --force-reinstall datasets soundfile PyYAML huggingface_hub numpy
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install base dependencies"
     exit 1
 fi
 
 echo "[3/4] Forcing upgrade of transformers for LFM2..."
-pip install -U "transformers==4.57.1"
+python -m pip install -U "transformers==4.57.1"
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to upgrade transformers"
     exit 1
 fi
 
 echo "[4/4] Installing remaining nemo-toolkit dependencies (ignoring transformers conflict)..."
-pip install "nemo-toolkit[all]" --no-deps
+python -m pip install "nemo-toolkit[all]" --no-deps
 
 echo ""
 echo "[2/3] Generating audio dataset..."
