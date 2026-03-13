@@ -15,10 +15,17 @@ echo "============================================================"
 echo ""
 
 # Step 1: Install dependencies
-echo "[1/3] Installing dependencies..."
+echo "[1/3] Installing base dependencies..."
 pip install -r requirements.txt
 if [ $? -ne 0 ]; then
-    echo "[ERROR] Failed to install dependencies"
+    echo "[ERROR] Failed to install base dependencies"
+    exit 1
+fi
+
+echo "[1.5/3] Forcing upgrade of transformers for LFM2..."
+pip install -U "transformers==4.57.1" --no-dependencies
+if [ $? -ne 0 ]; then
+    echo "[ERROR] Failed to upgrade transformers"
     exit 1
 fi
 

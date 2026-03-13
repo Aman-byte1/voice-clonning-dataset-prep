@@ -13,10 +13,18 @@ echo ============================================================
 echo.
 
 REM Step 1: Install dependencies
-echo [1/3] Installing dependencies...
+echo [1/3] Installing base dependencies...
 pip install -r requirements.txt
 if %ERRORLEVEL% neq 0 (
-    echo [ERROR] Failed to install dependencies
+    echo [ERROR] Failed to install base dependencies
+    exit /b 1
+)
+
+echo.
+echo [1.5/3] Forcing upgrade of transformers for LFM2...
+pip install -U "transformers==4.57.1" --no-dependencies
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Failed to upgrade transformers
     exit /b 1
 )
 
