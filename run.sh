@@ -38,7 +38,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "[2/4] Installing base dependencies..."
-$PY -m pip install datasets soundfile PyYAML huggingface_hub numpy hf_transfer
+$PY -m pip install datasets soundfile PyYAML huggingface_hub numpy hf_transfer torch
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to install base dependencies"
     exit 1
