@@ -52,42 +52,63 @@ def push_dataset(config_path="config.yaml"):
     print(f"[INFO] Loaded manifest with {len(manifest)} entries")
     
     # Build dataset dict with absolute audio paths
-    dataset_dict = {
-        "text": [],
-        "audio": [],
-        "speaker_id": [],
-        "language": [],
-    }
+    # Group by (row_index, speaker_id) to create a parallel dataset
+    languages = list(config.get("languages", {"en": "", "fr": ""}).keys())
     
-    skipped = 0
+    # Initialize the parallel Dictionary
+    dataset_dict = { "speaker_id": [] }
+    for lang in languages:
+        dataset_dict[f"text_{lang}"] = []
+        dataset_dict[f"audio_{lang}"] = []
+        
+    # Group manifest entries
+    grouped_entries = {}
     for entry in manifest:
+        key = (entry["row_index"], entry["speaker_id"])
+        if key not in grouped_entries:
+            grouped_entries[key] = {}
+            
+        lang = entry["language"]
         audio_abs_path = str(output_dir / entry["audio_path"])
         
-        if not os.path.exists(audio_abs_path):
-            print(f"[WARN] Audio file not found: {audio_abs_path}")
+        if os.path.exists(audio_abs_path):
+            grouped_entries[key][lang] = {
+                "text": entry["text"],
+                "audio": audio_abs_path
+            }
+            
+    skipped = 0
+    # Populate the dataset dictionary
+    for (row_idx, speaker), lang_data in grouped_entries.items():
+        # Check if we have all languages for this parallel row
+        has_all_langs = all(lang in lang_data for lang in languages)
+        
+        if not has_all_langs:
             skipped += 1
             continue
-        
-        dataset_dict["text"].append(entry["text"])
-        dataset_dict["audio"].append(audio_abs_path)
-        dataset_dict["speaker_id"].append(entry["speaker_id"])
-        dataset_dict["language"].append(entry["language"])
+            
+        dataset_dict["speaker_id"].append(speaker)
+        for lang in languages:
+            dataset_dict[f"text_{lang}"].append(lang_data[lang]["text"])
+            dataset_dict[f"audio_{lang}"].append(lang_data[lang]["audio"])
     
     if skipped > 0:
-        print(f"[WARN] Skipped {skipped} entries with missing audio files")
+        print(f"[WARN] Skipped {skipped} parallel rows due to missing audio files")
     
-    # Create HuggingFace Dataset with Audio feature
-    features = Features({
-        "text": Value("string"),
-        "audio": Audio(sampling_rate=config["model"]["sample_rate"]),
-        "speaker_id": Value("string"),
-        "language": Value("string"),
-    })
+    # Create HuggingFace Dataset with parallel Audio features
+    features_dict = {
+        "speaker_id": Value("string")
+    }
+    for lang in languages:
+        features_dict[f"text_{lang}"] = Value("string")
+        features_dict[f"audio_{lang}"] = Audio(sampling_rate=config["model"]["sample_rate"])
+        
+    features = Features(features_dict)
     
     ds = Dataset.from_dict(dataset_dict)
     ds = ds.cast(features)
     
-    print(f"[INFO] Dataset created with {len(ds)} rows")
+    print(f"[INFO] Parallel Dataset created with {len(ds)} rows")
     print(f"[INFO] Features: {ds.features}")
     
     # Push to Hub
